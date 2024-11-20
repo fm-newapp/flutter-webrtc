@@ -215,11 +215,13 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     FlutterRTCVideoRenderer* strongSelf = weakSelf;
     [strongSelf.registry textureFrameAvailable:strongSelf.textureId];
-    if (!strongSelf->_isFirstFrameRendered) {
-      if (strongSelf.eventSink) {
+    if (strongSelf.eventSink) {
+      if (!strongSelf->_isFirstFrameRendered) {
         postEvent(strongSelf.eventSink, @{@"event" : @"didFirstFrameRendered"});
         strongSelf->_isFirstFrameRendered = true;
       }
+
+      postEvent(strongSelf.eventSink, @{@"event" : @"didFrameTimestampNs", @"timestampNs" : [NSNumber numberWithLongLong:[frame timeStampNs]]});
     }
   });
 }
